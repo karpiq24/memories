@@ -47,13 +47,16 @@ trait TimelineQueryFaces
         );
     }
 
-    public function getFaces(TimelineRoot &$root)
+    public function getFaces(TimelineRoot &$root, string $userId)
     {
         $query = $this->connection->getQueryBuilder();
 
         // SELECT all face clusters
         $count = $query->func()->count($query->createFunction('DISTINCT m.fileid'), 'count');
         $query->select('rfc.id', 'rfc.user_id', 'rfc.title', $count)->from('recognize_face_clusters', 'rfc');
+
+        // WHERE these clusters belong to this user
+        $query->where($query->expr()->eq('rfc.user_id', $userId));
 
         // WHERE there are faces with this cluster
         $query->innerJoin('rfc', 'recognize_face_detections', 'rfd', $query->expr()->eq('rfc.id', 'rfd.cluster_id'));

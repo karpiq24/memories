@@ -57,6 +57,7 @@ class FacesController extends ApiBase
         // Run actual query
         $list = $this->timelineQuery->getFaces(
             $root,
+            $user->getUID(),
         );
 
         return new JSONResponse($list, Http::STATUS_OK);
